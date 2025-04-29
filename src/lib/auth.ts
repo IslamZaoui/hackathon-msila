@@ -7,7 +7,6 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { openAPI } from "better-auth/plugins";
 import prisma from "@/lib/prisma";
-import { env } from "@/env";
 import { signupSchema } from "./schemas/auth.schema";
 
 const validator = validatorAdapter([
@@ -18,7 +17,6 @@ const validator = validatorAdapter([
 ]);
 
 export const auth = betterAuth({
-  baseUrl: env.NEXT_PUBLIC_BETTER_AUTH_URL,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
