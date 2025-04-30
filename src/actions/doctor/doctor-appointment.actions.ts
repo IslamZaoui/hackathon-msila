@@ -60,6 +60,19 @@ export async function getDoctorPatientAppointments(patientId: string) {
   return appointments;
 }
 
+export async function rejectAppointment(appointmentId: string) {
+  const doctor = await requireDoctor();
+
+  const appointment = await prisma.appointment.update({
+    where: { id: appointmentId, doctorId: doctor.id },
+    data: {
+      status: "rejected",
+    },
+  });
+
+  return appointment;
+}
+
 export interface CreateReportData {
   appointmentId: string;
   price: number;
