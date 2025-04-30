@@ -18,7 +18,7 @@ async function getDoctors(page = 1): Promise<{
   const mockDoctors: Doctor[] = [
     {
       id: "1",
-      name: "Dr. Ahmed Benali",
+      name: "Dr. Ahmed Belaid",
       specialty: "Cardiologist",
       photo: "/placeholder.svg?height=300&width=400",
       clinicName: "Heart Care Clinic",
