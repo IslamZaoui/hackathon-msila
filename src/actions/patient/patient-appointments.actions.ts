@@ -22,7 +22,12 @@ export async function getPatientAppointments() {
   const patient = await requirePatient();
 
   const appointments = await prisma.appointment.findMany({
-    where: { patientId: patient.id },
+    where: {
+      patientId: patient.id,
+      status: {
+        in: ["pending", "rejected"],
+      },
+    },
     include: {
       doctor: true,
     },
@@ -37,6 +42,21 @@ export async function getPatientAppointments() {
 export type PatientAppointment = Awaited<
   ReturnType<typeof getPatientAppointments>
 >[number];
+
+export async function getPatientVisits() {
+  const patient = await requirePatient();
+
+  const visits = await prisma.appointment.findMany({
+    where: { patientId: patient.id, status: "completed" },
+    include: {
+      doctor: true,
+      prescription: true,
+      Analysis: true,
+    },
+  });
+
+  return visits;
+}
 
 export async function cancelAppointment(appointmentId: string) {
   const patient = await requirePatient();
