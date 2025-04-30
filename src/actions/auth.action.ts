@@ -3,6 +3,7 @@
 import { auth } from "@/lib/auth";
 import { Gender } from "@/lib/contants";
 import { BloodType } from "@/lib/contants";
+import tryCatch from "@/lib/helpers/try-catch-helper";
 import {
   doctorSignupSchema,
   patientSignupSchema,
@@ -13,13 +14,21 @@ import { z } from "zod";
 export async function loginAction(email: string, password: string) {
   const headerStore = await headers();
 
-  return await auth.api.signInEmail({
-    body: {
-      email,
-      password,
-    },
-    headers: headerStore,
-  });
+  const { data, error } = await tryCatch(
+    auth.api.signInEmail({
+      body: {
+        email,
+        password,
+      },
+      headers: headerStore,
+    })
+  );
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return data;
 }
 
 export async function logoutAction() {
