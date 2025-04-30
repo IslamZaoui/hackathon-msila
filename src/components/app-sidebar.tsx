@@ -18,7 +18,7 @@ import {
   IconSettings,
   IconUsers,
 } from "@tabler/icons-react"
-
+import Link from "next/link"
 
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
@@ -32,55 +32,60 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { getUserAction } from "@/actions/auth.action"
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/doctor",
       icon: IconDashboard,
     },
     {
-      title: "Appointements",
-      url: "#",
+      title: "Appointments",
+      url: "/doctor/appointments",
       icon: IconListDetails,
     },
     {
-      title: "Consultations",
-      url: "#",
-      icon: IconChartBar,
+      title: "Patients",
+      url: "/doctor/patients",
+      icon: IconUsers,
     },
     {
-      title: "My Patients",
-      url: "#",
-      icon: IconFolder,
+      title: "Reports",
+      url: "/doctor/reports",
+      icon: IconReport,
     },
   ],
   navSecondary: [
     {
       title: "Settings",
-      url: "#",
+      url: "/settings",
       icon: IconSettings,
     },
     {
-      title: "Get Help",
-      url: "#",
+      title: "Help",
+      url: "/help",
       icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
     },
   ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [user, setUser] = React.useState<any>(null)
+
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await getUserAction()
+      setUser(userData)
+    }
+    fetchUser()
+  }, [])
+
+  if (!user) {
+    return null
+  }
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -90,10 +95,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
+              <Link href="/">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">MediLink</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -103,7 +108,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   )
