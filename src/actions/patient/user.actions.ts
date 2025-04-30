@@ -14,7 +14,7 @@ export interface RegisterPatientData
   password: string;
 }
 
-export async function registerDoctorAction(input: RegisterPatientData) {
+export async function registerPatientAction(input: RegisterPatientData) {
   const headerStore = await headers();
 
   const { error } = await tryCatch(
@@ -23,7 +23,7 @@ export async function registerDoctorAction(input: RegisterPatientData) {
         name: input.name,
         email: input.email,
         password: input.password,
-        role: "doctor",
+        role: "patient",
         gender: input.gender,
         bloodType: input.bloodType,
         birthDate: input.birthDate,

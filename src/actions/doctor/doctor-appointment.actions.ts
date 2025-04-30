@@ -4,20 +4,6 @@ import prisma from "@/lib/prisma";
 import { requireDoctor } from "../require/require-role";
 import { PatientUser } from "../auth.action";
 
-export async function createAppointment(patientId: string, date: Date) {
-  const doctor = await requireDoctor();
-
-  const newAppointment = await prisma.appointment.create({
-    data: {
-      patientId,
-      doctorId: doctor.id,
-      date,
-    },
-  });
-
-  return newAppointment;
-}
-
 export async function getDoctorAppointments() {
   const doctor = await requireDoctor();
 
