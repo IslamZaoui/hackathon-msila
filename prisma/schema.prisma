@@ -1,5 +1,5 @@
 generator client {
-  provider      = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -8,26 +8,28 @@ datasource db {
 }
 
 model User {
-  id             String    @id
-  name           String
-  email          String
-  emailVerified  Boolean
-  image          String?
-  createdAt      DateTime
-  updatedAt      DateTime
-  role           String
-  phone          String
-  gender         String
-  country        String
-  specialization String
-  hcpId          String
-  medicalId      String
-  bloodType      String
-  birthDate      DateTime
-  height         Int
-  weight         Int
-  sessions       Session[]
-  accounts       Account[]
+  id                  String        @id
+  name                String
+  email               String
+  emailVerified       Boolean
+  image               String?
+  createdAt           DateTime
+  updatedAt           DateTime
+  role                String
+  phone               String
+  gender              String
+  country             String
+  specialization      String
+  hcpId               String
+  medicalId           String
+  bloodType           String
+  birthDate           DateTime
+  height              Int
+  weight              Int
+  sessions            Session[]
+  accounts            Account[]
+  patientAppointments Appointment[] @relation("PatientAppointments")
+  doctorAppointments  Appointment[] @relation("DoctorAppointments")
 
   @@unique([email])
   @@map("user")
@@ -76,4 +78,73 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+enum AppointmentStatus {
+  pending
+  completed
+}
+
+model Appointment {
+  id           String        @id @default(nanoid())
+  patientId    String
+  patient      User          @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId     String
+  doctor       User          @relation("DoctorAppointments", fields: [doctorId], references: [id], onDelete: Cascade)
+  date         DateTime
+  price        Float?
+  prescription Prescription?
+  Analysis     Analysis?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@map("appointment")
+}
+
+model Prescription {
+  id                     String                   @id @default(nanoid())
+  appointmentId          String                   @unique
+  appointment            Appointment              @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  prescriptionMedication PrescriptionMedication[]
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+
+  @@map("prescription")
+}
+
+model PrescriptionMedication {
+  id             String       @id @default(nanoid())
+  prescriptionId String
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  medication     String
+  duration       String
+  dosage         String
+  instructions   String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@map("prescription_medication")
+}
+
+model Analysis {
+  id             String           @id @default(nanoid())
+  appointmentId  String           @unique
+  appointment    Appointment      @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  analysisResult AnalysisResult[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@map("analysis")
+}
+
+model AnalysisResult {
+  id         String   @id @default(nanoid())
+  analysisId String
+  analysis   Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  name       String
+  result     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("analysis_result")
 }
