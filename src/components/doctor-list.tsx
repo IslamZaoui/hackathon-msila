@@ -1,7 +1,8 @@
-import { DoctorCard, type Doctor } from "@/components/doctor-card"
+import { DoctorCard } from "@/components/doctor-card"
+import type { DoctorUser } from "@/actions/auth.action"
 
 interface DoctorListProps {
-  doctors: Doctor[]
+  doctors: DoctorUser[]
 }
 
 export function DoctorList({ doctors }: DoctorListProps) {

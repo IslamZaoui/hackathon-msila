@@ -4,83 +4,106 @@ import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronUp, Calendar, FileText } from "lucide-react"
-import type { Consultation } from "../../consultations/page"
+import { formatDate } from "@/lib/utils"
+import type { Appointment } from "@prisma/client"
 
 interface PatientConsultationsProps {
-    consultations: Consultation[]
+    appointments: (Appointment & {
+        prescription: {
+            prescriptionMedication: {
+                id: string
+                medication: string
+                duration: string
+                dosage: string
+                instructions: string
+            }[]
+        } | null
+        Analysis: {
+            analysisResult: {
+                id: string
+                name: string
+                result: string
+            }[]
+        } | null
+    })[]
 }
 
-export default function PatientConsultations({ consultations }: PatientConsultationsProps) {
-    const [expandedConsultation, setExpandedConsultation] = useState<string | null>(null)
+export default function PatientConsultations({ appointments }: PatientConsultationsProps) {
+    const [expandedAppointments, setExpandedAppointments] = useState<Set<string>>(new Set())
 
-    const toggleConsultation = (id: string) => {
-        setExpandedConsultation(expandedConsultation === id ? null : id)
+    const toggleAppointment = (id: string) => {
+        setExpandedAppointments((prev) => {
+            const next = new Set(prev)
+            if (next.has(id)) {
+                next.delete(id)
+            } else {
+                next.add(id)
+            }
+            return next
+        })
     }
 
-    if (consultations.length === 0) {
-        return <p className="text-center text-muted-foreground py-8">No consultations found.</p>
+    if (appointments.length === 0) {
+        return <p className="text-center text-muted-foreground py-8">No appointments found.</p>
     }
 
     return (
         <div className="space-y-4">
-            {consultations.map((consultation) => (
-                <Card key={consultation.id} className="overflow-hidden">
-                    <CardContent className="p-0">
-                        <div
-                            className="p-4 cursor-pointer flex justify-between items-center"
-                            onClick={() => toggleConsultation(consultation.id!)}
-                        >
+            {appointments.map((appointment) => (
+                <Card key={appointment.id}>
+                    <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <Calendar className="h-5 w-5 text-muted-foreground" />
-                                <div>
-                                    <h4 className="font-medium">Consultation {consultation.id}</h4>
-                                    <p className="text-sm text-muted-foreground">Price: ${consultation.price}</p>
-                                </div>
+                                <Calendar className="h-4 w-4" />
+                                <span className="font-medium">{formatDate(appointment.date.toLocaleDateString())}</span>
                             </div>
-                            <Button variant="ghost" size="icon">
-                                {expandedConsultation === consultation.id ? (
-                                    <ChevronUp className="h-5 w-5" />
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => toggleAppointment(appointment.id)}
+                            >
+                                {expandedAppointments.has(appointment.id) ? (
+                                    <ChevronUp className="h-4 w-4" />
                                 ) : (
-                                    <ChevronDown className="h-5 w-5" />
+                                    <ChevronDown className="h-4 w-4" />
                                 )}
                             </Button>
                         </div>
 
-                        {expandedConsultation === consultation.id && (
-                            <div className="p-4 pt-0 border-t">
-                                <div className="space-y-4">
-                                    <div className="flex items-start gap-3">
-                                        <FileText className="h-5 w-5 text-muted-foreground mt-0.5" />
-                                        <div>
-                                            <h5 className="font-medium">Report</h5>
-                                            <p className="text-sm mt-1">{consultation.report}</p>
-                                        </div>
+                        {expandedAppointments.has(appointment.id) && (
+                            <div className="mt-4 space-y-4">
+                                {appointment.description && (
+                                    <div className="flex items-start gap-2">
+                                        <FileText className="h-4 w-4 mt-0.5" />
+                                        <p className="text-sm">{appointment.description}</p>
                                     </div>
+                                )}
 
-                                    {consultation.prescriptions.length > 0 && (
-                                        <div>
-                                            <h5 className="font-medium mb-2">Prescriptions</h5>
-                                            <div className="space-y-2">
-                                                {consultation.prescriptions.map((prescription) => (
-                                                    <div key={prescription.id} className="bg-muted p-3 rounded-md text-sm">
-                                                        <p className="font-medium">{prescription.medicationName}</p>
-                                                        <div className="grid grid-cols-2 gap-2 mt-1">
-                                                            <p>
-                                                                <span className="text-muted-foreground">Dosage:</span> {prescription.dosage}
-                                                            </p>
-                                                            <p>
-                                                                <span className="text-muted-foreground">Duration:</span> {prescription.duration}
-                                                            </p>
-                                                            <p className="col-span-2">
-                                                                <span className="text-muted-foreground">Instructions:</span> {prescription.instructions}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                ))}
+                                {appointment.prescription && (
+                                    <div className="space-y-2">
+                                        <h4 className="font-medium text-sm">Prescription</h4>
+                                        {appointment.prescription.prescriptionMedication.map((med) => (
+                                            <div key={med.id} className="text-sm pl-6">
+                                                <p className="font-medium">{med.medication}</p>
+                                                <p className="text-muted-foreground">Dosage: {med.dosage}</p>
+                                                <p className="text-muted-foreground">Duration: {med.duration}</p>
+                                                <p className="text-muted-foreground">Instructions: {med.instructions}</p>
                                             </div>
-                                        </div>
-                                    )}
-                                </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {appointment.Analysis && (
+                                    <div className="space-y-2">
+                                        <h4 className="font-medium text-sm">Analysis Results</h4>
+                                        {appointment.Analysis.analysisResult.map((result) => (
+                                            <div key={result.id} className="text-sm pl-6">
+                                                <p className="font-medium">{result.name}</p>
+                                                <p className="text-muted-foreground">Result: {result.result}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         )}
                     </CardContent>
