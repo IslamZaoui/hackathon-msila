@@ -60,29 +60,27 @@ export async function getDoctorPatientAppointments(patientId: string) {
   return appointments;
 }
 
-export interface CreatePrescriptionData {
+export interface CreateReportData {
   appointmentId: string;
-  medications: {
+  price: number;
+  description: string;
+  medications?: {
     medication: string;
     duration: string;
     dosage: string;
     instructions: string;
   }[];
+  analysis?: {
+    name: string;
+    result: string;
+  }[];
 }
 
-export async function createPrescription(data: CreatePrescriptionData) {
+export async function createReport(data: CreateReportData) {
   const doctor = await requireDoctor();
 
-  const prescription = await prisma.appointment.update({
-    where: {
-      id: data.appointmentId,
-      doctorId: doctor.id,
-      prescription: {
-        is: null,
-      },
-    },
-    data: {
-      prescription: {
+  const prescription = data.medications
+    ? ({
         create: {
           prescriptionMedication: {
             createMany: {
@@ -90,9 +88,27 @@ export async function createPrescription(data: CreatePrescriptionData) {
             },
           },
         },
-      },
+      } as const)
+    : undefined;
+
+  const Analysis = data.analysis
+    ? ({
+        create: {
+          analysisResult: { createMany: { data: data.analysis } },
+        },
+      } as const)
+    : undefined;
+
+  const report = await prisma.appointment.update({
+    where: { id: data.appointmentId, doctorId: doctor.id },
+    data: {
+      price: data.price,
+      description: data.description,
+      status: "completed",
+      prescription,
+      Analysis,
     },
   });
 
-  return prescription;
+  return report;
 }
