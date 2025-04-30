@@ -1,8 +1,7 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { v4 as uuidv4 } from "uuid"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,14 +9,30 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Plus, Trash2 } from "lucide-react"
-import type { Consultation, Prescription } from "./page"
+import { toast } from "sonner"
+import { createReport } from "@/actions/doctor/doctor-appointment.actions"
 
 interface ConsultationFormProps {
-    initialData: Consultation | null
+    appointmentId: string
+    initialData?: {
+        report: string
+        price: string
+        prescriptions: Prescription[]
+    }
 }
 
-export default function ConsultationForm({ initialData }: ConsultationFormProps) {
-    const [formData, setFormData] = useState<Consultation>(
+interface Prescription {
+    id: string
+    medicationName: string
+    duration: string
+    dosage: string
+    instructions: string
+}
+
+export default function ConsultationForm({ appointmentId, initialData }: ConsultationFormProps) {
+    const router = useRouter()
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [formData, setFormData] = useState(
         initialData || {
             report: "",
             price: "",
@@ -54,11 +69,42 @@ export default function ConsultationForm({ initialData }: ConsultationFormProps)
         })
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        // In a real app, you would submit the form data to your API
-        console.log("Submitting consultation:", formData)
-        // Reset form or redirect
+        setIsSubmitting(true)
+
+        try {
+            // Validate price is a number
+            const price = parseFloat(formData.price)
+            if (isNaN(price)) {
+                toast.error("Please enter a valid price")
+                return
+            }
+
+            // Prepare medications data
+            const medications = formData.prescriptions.map(p => ({
+                medication: p.medicationName,
+                duration: p.duration,
+                dosage: p.dosage,
+                instructions: p.instructions
+            }))
+
+            // Submit the report
+            await createReport({
+                appointmentId,
+                price,
+                description: formData.report,
+                medications: medications.length > 0 ? medications : undefined
+            })
+
+            toast.success("Consultation saved successfully")
+            router.push("/doctor/appointments")
+        } catch (error) {
+            console.error("Error saving consultation:", error)
+            toast.error("Failed to save consultation")
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     return (
@@ -75,6 +121,7 @@ export default function ConsultationForm({ initialData }: ConsultationFormProps)
                                 value={formData.report}
                                 onChange={(e) => setFormData({ ...formData, report: e.target.value })}
                                 required
+                                disabled={isSubmitting}
                             />
                         </div>
 
@@ -82,11 +129,14 @@ export default function ConsultationForm({ initialData }: ConsultationFormProps)
                             <Label htmlFor="price">Price</Label>
                             <Input
                                 id="price"
-                                type="text"
+                                type="number"
                                 placeholder="Enter consultation price"
                                 value={formData.price}
                                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                                 required
+                                disabled={isSubmitting}
+                                min="0"
+                                step="0.01"
                             />
                         </div>
                     </div>
@@ -96,7 +146,12 @@ export default function ConsultationForm({ initialData }: ConsultationFormProps)
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-semibold">Prescriptions</h2>
-                    <Button type="button" onClick={handleAddPrescription} variant="outline">
+                    <Button 
+                        type="button" 
+                        onClick={handleAddPrescription} 
+                        variant="outline"
+                        disabled={isSubmitting}
+                    >
                         <Plus className="mr-2 h-4 w-4" /> Add Prescription
                     </Button>
                 </div>
@@ -112,6 +167,7 @@ export default function ConsultationForm({ initialData }: ConsultationFormProps)
                                     value={prescription.medicationName}
                                     onChange={(e) => handlePrescriptionChange(prescription.id, "medicationName", e.target.value)}
                                     required
+                                    disabled={isSubmitting}
                                 />
                             </div>
 
@@ -123,6 +179,7 @@ export default function ConsultationForm({ initialData }: ConsultationFormProps)
                                     value={prescription.duration}
                                     onChange={(e) => handlePrescriptionChange(prescription.id, "duration", e.target.value)}
                                     required
+                                    disabled={isSubmitting}
                                 />
                             </div>
 
@@ -134,6 +191,7 @@ export default function ConsultationForm({ initialData }: ConsultationFormProps)
                                     value={prescription.dosage}
                                     onChange={(e) => handlePrescriptionChange(prescription.id, "dosage", e.target.value)}
                                     required
+                                    disabled={isSubmitting}
                                 />
                             </div>
 
@@ -145,6 +203,7 @@ export default function ConsultationForm({ initialData }: ConsultationFormProps)
                                     value={prescription.instructions}
                                     onChange={(e) => handlePrescriptionChange(prescription.id, "instructions", e.target.value)}
                                     required
+                                    disabled={isSubmitting}
                                 />
                             </div>
 
@@ -154,6 +213,7 @@ export default function ConsultationForm({ initialData }: ConsultationFormProps)
                                 size="icon"
                                 className="absolute top-2 right-2 text-destructive"
                                 onClick={() => handleRemovePrescription(prescription.id)}
+                                disabled={isSubmitting}
                             >
                                 <Trash2 className="h-4 w-4" />
                             </Button>
@@ -163,8 +223,15 @@ export default function ConsultationForm({ initialData }: ConsultationFormProps)
             </div>
 
             <div className="flex gap-4">
-                <Button type="submit">Save Consultation</Button>
-                <Button type="button" variant="outline">
+                <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? "Saving..." : "Save Consultation"}
+                </Button>
+                <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => router.push("/doctor/appointments")}
+                    disabled={isSubmitting}
+                >
                     Cancel
                 </Button>
             </div>

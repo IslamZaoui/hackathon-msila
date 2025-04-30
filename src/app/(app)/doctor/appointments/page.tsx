@@ -4,7 +4,6 @@ import { Loader2 } from "lucide-react"
 import AppointmentsList from "./appointments-list"
 import { getDoctorAppointments, type Appointment } from "@/actions/doctor/doctor-appointment.actions"
 
-// Server component to fetch appointments
 export default async function AppointmentsPage() {
     const appointments = await getDoctorAppointments()
     const pendingAppointments = appointments.filter((appointment) => appointment.status === "pending")
