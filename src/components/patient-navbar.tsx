@@ -7,7 +7,11 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-export function PatientNavbar() {
+interface PatientNavbarProps {
+  onLogout: () => Promise<void>
+}
+
+export function PatientNavbar({ onLogout }: PatientNavbarProps) {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
 
@@ -16,11 +20,6 @@ export function PatientNavbar() {
     { href: "/patient/visits", label: "Visits" },
     { href: "/patient/prescriptions", label: "Prescriptions" },
   ]
-
-  const handleLogout = () => {
-    // Handle logout logic here
-    window.location.href = "/login"
-  }
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background">
@@ -50,7 +49,7 @@ export function PatientNavbar() {
           ))}
         </div>
         <div className="ml-auto">
-          <Button variant="ghost" size="sm" onClick={handleLogout} className="hidden md:flex">
+          <Button variant="ghost" size="sm" onClick={onLogout} className="hidden md:flex">
             <LogOut className="mr-2 h-4 w-4" />
             Logout
           </Button>
@@ -72,7 +71,7 @@ export function PatientNavbar() {
                 {route.label}
               </Link>
             ))}
-            <Button variant="ghost" size="sm" onClick={handleLogout} className="justify-start px-0">
+            <Button variant="ghost" size="sm" onClick={onLogout} className="justify-start px-0">
               <LogOut className="mr-2 h-4 w-4" />
               Logout
             </Button>

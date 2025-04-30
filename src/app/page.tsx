@@ -11,7 +11,7 @@ export default async function Home() {
     <main>
       <Navbar />
       <section className="bg-muted py-16">
-        <div className="container">
+        <div className="">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold mb-4">Find Trusted Doctors in Algeria</h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -24,7 +24,7 @@ export default async function Home() {
       </section>
 
       <section className="py-12">
-        <div className="container">
+        <div className="p-8">
           <h2 className="text-2xl font-bold mb-6">Available Doctors</h2>
           <DoctorList doctors={doctors} />
         </div>

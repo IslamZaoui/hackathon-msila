@@ -9,8 +9,8 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <nav className="border-b">
-      <div className="container flex items-center justify-between py-4">
+    <nav className="border-b w-full">
+      <div className="flex items-center justify-between py-4 px-10 w-full">
         <Link href="/" className="text-xl font-bold">
           MediLink
         </Link>
@@ -40,7 +40,7 @@ export function Navbar() {
               Login
             </Button>
           </Link>
-          <Link href="/signup">
+          <Link href="/signupP">
             <Button size="sm">Signup</Button>
           </Link>
         </div>
@@ -76,7 +76,7 @@ export function Navbar() {
                     Login
                   </Button>
                 </Link>
-                <Link href="/signup" onClick={() => setIsMenuOpen(false)}>
+                <Link href="/signupP" onClick={() => setIsMenuOpen(false)}>
                   <Button size="sm">Signup</Button>
                 </Link>
               </div>
