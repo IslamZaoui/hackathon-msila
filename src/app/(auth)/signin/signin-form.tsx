@@ -1,4 +1,5 @@
 "use client"
+import { loginAction } from "@/actions/auth.action";
 import { Button } from "@/components/ui/button";
 import {
     Form,
@@ -10,7 +11,9 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input";
+import { error } from "console";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 type SignInPayload = {
     email: string,
     password: string
@@ -22,9 +25,14 @@ export function SignInForm() {
             password: ""
         }
     });
-    const onSubmit = (payload: any) => {
-        console.log(payload);
-    }
+    const onSubmit = async (payload:SignInPayload ) => {
+      const res = await loginAction( payload.email,payload.password);
+      if ("error" in res) {
+        toast(res.error);
+        return;
+      }
+      window.location.reload() ;
+     }
 
     return (
         <Form {...form}>
