@@ -49,3 +49,11 @@ export async function getDoctorById(id: string) {
     },
   })) as DoctorUser;
 }
+
+export async function getAllDoctors() {
+  return await prisma.user.findMany({
+    where: {
+      role: "doctor",
+    },
+  });
+}
