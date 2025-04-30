@@ -35,7 +35,7 @@ export function Navbar() {
           <Link href="/contact" className="text-sm font-medium hover:text-primary">
             Contact
           </Link>
-          <Link href="/login">
+          <Link href="/signin">
             <Button variant="ghost" size="sm">
               Login
             </Button>
@@ -71,7 +71,7 @@ export function Navbar() {
                 Contact
               </Link>
               <div className="flex gap-2">
-                <Link href="/login" onClick={() => setIsMenuOpen(false)}>
+                <Link href="/signin " onClick={() => setIsMenuOpen(false)}>
                   <Button variant="ghost" size="sm">
                     Login
                   </Button>

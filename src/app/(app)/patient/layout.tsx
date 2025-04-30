@@ -19,7 +19,7 @@ export default function PatientLayout({
     const fetchPatient = async () => {
       const userData = await getUserAction()
       if (!userData || userData.role !== "patient") {
-        router.push("/auth/login")
+        router.push("/signin")
         return
       }
       setPatient(userData)
@@ -29,7 +29,7 @@ export default function PatientLayout({
 
   const handleLogout = async () => {
     await logoutAction()
-    router.push("/auth/login")
+    router.push("/signin")
   }
 
   if (!patient) {

@@ -83,8 +83,9 @@ export default function RegistrationForm() {
             name: fullName,
             email: formData.email,
             password: formData.password,
-
             phone: formData.phone,
+            birthday: new Date("22/01/2004"), 
+            gender: "male",
             bloodType: "O+",
             height: 177,
             weight: 83,
