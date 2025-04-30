@@ -95,6 +95,7 @@ model Appointment {
   date         DateTime
   status       AppointmentStatus @default(pending)
   price        Float?
+  description  String?
   prescription Prescription?
   Analysis     Analysis?
   createdAt    DateTime          @default(now())
