@@ -7,6 +7,7 @@ import {
   IconNotification,
   IconUserCircle,
 } from "@tabler/icons-react"
+import { useRouter } from "next/navigation"
 
 import {
   Avatar,
@@ -28,17 +29,33 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { logoutAction } from "@/actions/auth.action"
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string
-    email: string
-    avatar: string
-  }
-}) {
+interface User {
+  id: string
+  name: string
+  email: string
+  role: "doctor" | "patient"
+  country?: string
+  specialization?: string
+  hcpId?: string
+  medicalId?: string
+  phone: string
+  gender?: "male" | "female"
+  bloodType?: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-"
+  birthDate?: Date
+  height?: number
+  weight?: number
+}
+
+export function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    await logoutAction()
+    router.push("/signin");
+  }
 
   return (
     <SidebarMenu>
@@ -49,9 +66,10 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+              <Avatar className="h-8 w-8 rounded-lg">
+                <AvatarFallback className="rounded-lg">
+                  {user.name[0]}{user.name.split(" ")[1]?.[0] || ""}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
@@ -71,8 +89,9 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">{user.name[0] + user.name[1]}</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
+                    {user.name[0]}{user.name.split(" ")[1]?.[0] || ""}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
@@ -85,21 +104,21 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <IconUserCircle />
+                <IconUserCircle className="mr-2" />
                 Account
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <IconCreditCard />
+                <IconCreditCard className="mr-2" />
                 Billing
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <IconNotification />
+                <IconNotification className="mr-2" />
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <IconLogout />
+            <DropdownMenuItem onClick={handleLogout}>
+              <IconLogout className="mr-2" />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

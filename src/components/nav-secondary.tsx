@@ -1,7 +1,9 @@
 "use client"
 
-import * as React from "react"
 import { type Icon } from "@tabler/icons-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 import {
   SidebarGroup,
@@ -13,25 +15,35 @@ import {
 
 export function NavSecondary({
   items,
-  ...props
+  className,
 }: {
   items: {
     title: string
     url: string
-    icon: Icon
+    icon?: Icon
   }[]
-} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+  className?: string
+}) {
+  const pathname = usePathname()
+
   return (
-    <SidebarGroup {...props}>
-      <SidebarGroupContent>
+    <SidebarGroup className={className}>
+      <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild>
-                <a href={item.url}>
-                  <item.icon />
+              <SidebarMenuButton 
+                asChild 
+                tooltip={item.title}
+                className={cn(
+                  "data-[slot=sidebar-menu-button]:hover:bg-muted",
+                  pathname === item.url && "data-[slot=sidebar-menu-button]:bg-primary data-[slot=sidebar-menu-button]:text-primary-foreground data-[slot=sidebar-menu-button]:hover:bg-primary"
+                )}
+              >
+                <Link href={item.url}>
+                  {item.icon && <item.icon className="size-5" />}
                   <span>{item.title}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

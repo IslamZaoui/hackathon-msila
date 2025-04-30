@@ -6,41 +6,36 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DatePicker } from "@/components/date-picker"
-import { TimeSlotPicker, type TimeSlot } from "@/components/time-slot-picker"
-import { BookingForm } from "@/components/booking-form"
+import { Button } from "@/components/ui/button"
+import type { DoctorUser } from "@/actions/auth.action"
+import { createAppointment } from "@/actions/patient/patient-appointments.actions"
 
 interface DoctorProfileProps {
-  doctor: {
-    id: string
-    name: string
-    specialty: string
-    experience: number
-    fee: string
-    rating: number
-    reviews: number
-    about: string
-  }
-  timeSlots: TimeSlot[]
+  doctor: DoctorUser
 }
 
-export function DoctorProfile({ doctor, timeSlots }: DoctorProfileProps) {
+export function DoctorProfile({ doctor }: DoctorProfileProps) {
   const [selectedDate, setSelectedDate] = useState<Date>()
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | null>(null)
-  const [showBookingForm, setShowBookingForm] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSelectDate = (date: Date | undefined) => {
     setSelectedDate(date)
-    setSelectedTimeSlot(null)
-    setShowBookingForm(false)
   }
 
-  const handleSelectTimeSlot = (timeSlot: TimeSlot) => {
-    setSelectedTimeSlot(timeSlot)
-    setShowBookingForm(true)
-  }
+  const handleBookAppointment = async () => {
+    if (!selectedDate) return
 
-  const handleCancelBooking = () => {
-    setShowBookingForm(false)
+    setIsSubmitting(true)
+    try {
+      await createAppointment(doctor.id, selectedDate)
+      alert("Appointment booked successfully!")
+      setSelectedDate(undefined)
+    } catch (error) {
+      console.error("Failed to book appointment:", error)
+      alert("Failed to book appointment. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -51,18 +46,16 @@ export function DoctorProfile({ doctor, timeSlots }: DoctorProfileProps) {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Badge variant="outline" className="text-primary">
-                  {doctor.specialty}
+                  {doctor.specialization}
                 </Badge>
-                <Badge variant="outline">{doctor.experience} years experience</Badge>
               </div>
               <div className="flex items-center gap-2">
-                <span className="font-medium">Consultation Fee:</span>
-                <span>{doctor.fee}</span>
+                <span className="font-medium">Phone:</span>
+                <span>{doctor.phone}</span>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-lg font-bold">{doctor.rating}%</div>
-              <div className="text-sm text-muted-foreground">{doctor.reviews} patient reviews</div>
+              <div className="text-sm text-muted-foreground">{doctor.country}</div>
             </div>
           </div>
         </CardContent>
@@ -79,7 +72,7 @@ export function DoctorProfile({ doctor, timeSlots }: DoctorProfileProps) {
           <Card>
             <CardContent className="p-6">
               <h3 className="text-lg font-semibold mb-2">About Doctor</h3>
-              <p>{doctor.about}</p>
+              <p>Dr. {doctor.name} is a {doctor.specialization} based in {doctor.country}.</p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -95,19 +88,19 @@ export function DoctorProfile({ doctor, timeSlots }: DoctorProfileProps) {
                 <div className="mt-6">
                   <div className="flex items-center gap-2 mb-4">
                     <Calendar className="h-5 w-5 text-primary" />
-                    <h3 className="text-lg font-semibold">Available Time Slots</h3>
+                    <h3 className="text-lg font-semibold">Selected Date</h3>
                   </div>
-                  <TimeSlotPicker timeSlots={timeSlots} onSelectTimeSlot={handleSelectTimeSlot} />
+                  <div className="text-center text-lg font-medium mb-4">
+                    {selectedDate.toLocaleDateString()}
+                  </div>
+                  <Button 
+                    className="w-full" 
+                    onClick={handleBookAppointment}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Booking..." : "Confirm Booking"}
+                  </Button>
                 </div>
-              )}
-
-              {showBookingForm && (
-                <BookingForm
-                  doctorId={doctor.id}
-                  selectedDate={selectedDate}
-                  selectedTimeSlot={selectedTimeSlot}
-                  onCancel={handleCancelBooking}
-                />
               )}
             </CardContent>
           </Card>

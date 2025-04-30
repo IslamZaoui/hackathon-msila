@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import type { TimeSlot } from "@/components/time-slot-picker"
+import { createAppointment } from "@/actions/patient/patient-appointments.actions"
 
 interface BookingFormProps {
   doctorId: string
@@ -33,15 +34,20 @@ export function BookingForm({ doctorId, selectedDate, selectedTimeSlot, onCancel
     e.preventDefault()
     setIsSubmitting(true)
 
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+    if (!selectedDate || !selectedTimeSlot) return
 
-      // Handle successful booking
+    try {
+      // Combine date and time
+      const appointmentDate = new Date(selectedDate)
+      const [hours, minutes] = selectedTimeSlot.time.split(":")
+      appointmentDate.setHours(parseInt(hours), parseInt(minutes))
+
+      await createAppointment(doctorId, appointmentDate)
       alert("Appointment booked successfully!")
       onCancel()
     } catch (error) {
       console.error("Error booking appointment:", error)
+      alert("Failed to book appointment. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
