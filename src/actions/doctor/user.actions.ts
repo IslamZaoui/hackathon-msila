@@ -2,10 +2,12 @@
 
 import { auth } from "@/lib/auth";
 import tryCatch from "@/lib/helpers/try-catch-helper";
+import prisma from "@/lib/prisma";
 import { doctorSignupSchema } from "@/lib/schemas/auth.schema";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { DoctorUser } from "../auth.action";
 
 export interface RegisterDoctorData extends z.infer<typeof doctorSignupSchema> {
   name: string;
@@ -37,4 +39,13 @@ export async function registerDoctorAction(data: RegisterDoctorData) {
   }
 
   return redirect("/doctor");
+}
+
+export async function getDoctorById(id: string) {
+  return (await prisma.user.findUnique({
+    where: {
+      id,
+      role: "doctor",
+    },
+  })) as DoctorUser;
 }
