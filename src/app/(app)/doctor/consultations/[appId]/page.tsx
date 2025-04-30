@@ -1,4 +1,6 @@
+import { redirect } from "next/navigation"
 import ConsultationForm from "./consultation-form"
+import { getDoctorAppointments } from "@/actions/doctor/doctor-appointment.actions"
 
 // Types for our consultation data
 export type Consultation = {
@@ -19,22 +21,30 @@ export type Prescription = {
 
 // Server component to fetch consultation data if needed
 export default async function ConsultationsPage({
-    searchParams,
+    params,
 }: {
-    searchParams: { patientId?: string }
+    params: { appId: string }
 }) {
-    // If patientId is provided, fetch existing consultation data
-    const patientId = searchParams.patientId
-    let consultationData: Consultation | null = null
+    // Get all appointments to validate the ID
+    const appointments = await getDoctorAppointments()
+    const appointment = appointments.find(a => a.id === params.appId)
 
-    if (patientId) {
-        consultationData = await fetchConsultationData(patientId)
+    // If appointment not found or not pending, redirect to appointments page
+    if (!appointment || appointment.status !== "pending") {
+        redirect("/doctor/appointments")
     }
 
     return (
         <div className="container py-6">
             <h1 className="text-3xl font-bold mb-6">New Consultation</h1>
-            <ConsultationForm initialData={consultationData} />
+            <ConsultationForm 
+                appointmentId={params.appId}
+                initialData={{
+                    report: "",
+                    price: "",
+                    prescriptions: []
+                }}
+            />
         </div>
     )
 }
