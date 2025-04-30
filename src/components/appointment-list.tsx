@@ -1,13 +1,14 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import type { Appointment } from "@/lib/types"
+import { type Appointment } from "@/actions/doctor/doctor-appointment.actions"
 import { formatDate } from "@/lib/utils"
 
 interface AppointmentListProps {
   appointments: Appointment[]
+  showActions?: boolean
 }
 
-export function AppointmentList({ appointments }: AppointmentListProps) {
+export function AppointmentList({ appointments, showActions = false }: AppointmentListProps) {
   if (appointments.length === 0) {
     return (
       <div className="flex h-40 items-center justify-center rounded-md border border-dashed">
@@ -23,10 +24,10 @@ export function AppointmentList({ appointments }: AppointmentListProps) {
           <CardContent className="p-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold">{appointment.doctorName}</h3>
+                <h3 className="font-semibold">{appointment.patient.name}</h3>
                 <Badge
                   variant={
-                    appointment.status === "accepted"
+                    appointment.status === "completed"
                       ? "default"
                       : appointment.status === "rejected"
                         ? "destructive"
@@ -38,18 +39,16 @@ export function AppointmentList({ appointments }: AppointmentListProps) {
               </div>
               <div className="text-sm text-muted-foreground">
                 <p>
-                  <span className="font-medium">Date:</span> {formatDate(appointment.dateTime)}
+                  <span className="font-medium">Date:</span> {formatDate(appointment.date)}
                 </p>
                 <p>
-                  <span className="font-medium">Time:</span>{" "}
-                  {new Date(appointment.dateTime).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  <span className="font-medium">Phone:</span> {appointment.patient.phone}
                 </p>
-                <p>
-                  <span className="font-medium">Clinic:</span> {appointment.clinicName}
-                </p>
+                {appointment.description && (
+                  <p>
+                    <span className="font-medium">Description:</span> {appointment.description}
+                  </p>
+                )}
               </div>
             </div>
           </CardContent>
