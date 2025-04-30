@@ -1,103 +1,141 @@
-import Image from "next/image";
+"use client"
+import { Navbar } from "@/components/navbar"
+import { SearchBar } from "@/components/search-bar"
+import { DoctorList } from "@/components/doctor-list"
+import { Pagination } from "@/components/pagination"
+import type { Doctor } from "@/components/doctor-card"
 
-export default function Home() {
+// Mock function to simulate fetching doctors from an API
+async function getDoctors(page = 1): Promise<{
+  doctors: Doctor[]
+  totalPages: number
+  currentPage: number
+}> {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+
+  // Mock data
+  const mockDoctors: Doctor[] = [
+    {
+      id: "1",
+      name: "Dr. Ahmed Benali",
+      specialty: "Cardiologist",
+      photo: "/placeholder.svg?height=300&width=400",
+      clinicName: "Heart Care Clinic",
+      address: "123 Medical St, Algiers",
+      phone: "+213 555 123 456",
+    },
+    {
+      id: "2",
+      name: "Dr. Fatima Zahra",
+      specialty: "Dermatologist",
+      photo: "/placeholder.svg?height=300&width=400",
+      clinicName: "Skin Health Center",
+      address: "45 Health Ave, Oran",
+      phone: "+213 555 789 012",
+    },
+    {
+      id: "3",
+      name: "Dr. Karim Hadj",
+      specialty: "Pediatrician",
+      photo: "/placeholder.svg?height=300&width=400",
+      clinicName: "Children's Wellness Clinic",
+      address: "78 Care Blvd, Constantine",
+      phone: "+213 555 345 678",
+    },
+    {
+      id: "4",
+      name: "Dr. Amina Taleb",
+      specialty: "Neurologist",
+      photo: "/placeholder.svg?height=300&width=400",
+      clinicName: "Brain & Nerve Center",
+      address: "90 Medical Center, Annaba",
+      phone: "+213 555 901 234",
+    },
+    {
+      id: "5",
+      name: "Dr. Youcef Mansouri",
+      specialty: "Orthopedic Surgeon",
+      photo: "/placeholder.svg?height=300&width=400",
+      clinicName: "Bone & Joint Specialists",
+      address: "34 Health Park, Blida",
+      phone: "+213 555 567 890",
+    },
+    {
+      id: "6",
+      name: "Dr. Leila Bouaziz",
+      specialty: "Ophthalmologist",
+      photo: "/placeholder.svg?height=300&width=400",
+      clinicName: "Vision Care Center",
+      address: "56 Eye St, Setif",
+      phone: "+213 555 234 567",
+    },
+    {
+      id: "7",
+      name: "Dr. Rachid Benmoussa",
+      specialty: "Dentist",
+      photo: "/placeholder.svg?height=300&width=400",
+      clinicName: "Smile Dental Clinic",
+      address: "12 Tooth Ave, Batna",
+      phone: "+213 555 678 901",
+    },
+    {
+      id: "8",
+      name: "Dr. Samira Khelifi",
+      specialty: "Gynecologist",
+      photo: "/placeholder.svg?height=300&width=400",
+      clinicName: "Women's Health Center",
+      address: "67 Care St, Djelfa",
+      phone: "+213 555 890 123",
+    },
+  ]
+
+  return {
+    doctors: mockDoctors,
+    totalPages: 3,
+    currentPage: page,
+  }
+}
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: { page?: string }
+}) {
+  const page = searchParams.page ? Number.parseInt(searchParams.page) : 1
+  const { doctors, totalPages, currentPage } = await getDoctors(page)
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <main>
+      <Navbar />
+      <section className="bg-muted py-16">
+        <div className="container">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold mb-4">Find Trusted Doctors in Algeria</h1>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Connect with the best healthcare professionals across Algeria. Book appointments online and get the care
+              you deserve.
+            </p>
+          </div>
+          <SearchBar />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+      </section>
+
+      <section className="py-12">
+        <div className="container">
+          <h2 className="text-2xl font-bold mb-6">Available Doctors</h2>
+          <DoctorList doctors={doctors} />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => {
+              // This will be handled by the client component
+              // and will update the URL with the new page parameter
+              window.location.href = `/?page=${page}`
+            }}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+        </div>
+      </section>
+    </main>
+  )
 }
