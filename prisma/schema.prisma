@@ -16,16 +16,16 @@ model User {
   createdAt           DateTime
   updatedAt           DateTime
   role                String
-  phone               String
-  gender              String
-  country             String
-  specialization      String
-  hcpId               String
-  medicalId           String
-  bloodType           String
-  birthDate           DateTime
-  height              Int
-  weight              Int
+  phone               String?
+  gender              String?
+  country             String?
+  specialization      String?
+  hcpId               String?
+  medicalId           String?
+  bloodType           String?
+  birthDate           DateTime?
+  height              Int?
+  weight              Int?
   sessions            Session[]
   accounts            Account[]
   patientAppointments Appointment[] @relation("PatientAppointments")
@@ -82,6 +82,7 @@ model Verification {
 
 enum AppointmentStatus {
   pending
+  rejected
   completed
 }
 

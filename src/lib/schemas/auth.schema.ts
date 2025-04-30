@@ -1,13 +1,10 @@
 import { z } from "zod";
 
-const baseSignupSchema = z.object({
+export const baseSignupSchema = z.object({
   phone: z.string({ required_error: "Phone is required" }).trim(),
-  gender: z.enum(["male", "female"], {
-    required_error: "Gender is required",
-  }),
 });
 
-const doctorSignupSchema = z
+export const doctorSignupSchema = z
   .object({
     country: z.string({ required_error: "Country is required" }).trim(),
     specialization: z
@@ -18,10 +15,13 @@ const doctorSignupSchema = z
   })
   .extend(baseSignupSchema.shape);
 
-const patientSignupSchema = z
+export const patientSignupSchema = z
   .object({
     bloodType: z.enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], {
       required_error: "Blood type is required",
+    }),
+    gender: z.enum(["male", "female"], {
+      required_error: "Gender is required",
     }),
     birthDate: z.date({ required_error: "Birth date is required" }),
     height: z.number({ required_error: "Height is required" }),

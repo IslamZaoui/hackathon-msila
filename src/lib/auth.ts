@@ -35,63 +35,53 @@ export const auth = betterAuth({
       phone: {
         type: "string",
         input: true,
-        required: true,
-        returned: true,
-      },
-      gender: {
-        type: "string",
-        input: true,
-        required: true,
         returned: true,
       },
       // doctor fields
       country: {
         type: "string",
         input: true,
-        required: true,
         returned: true,
       },
       specialization: {
         type: "string",
         input: true,
-        required: true,
         returned: true,
       },
       hcpId: {
         type: "string",
         input: true,
-        required: true,
         returned: true,
       },
       medicalId: {
         type: "string",
         input: true,
-        required: true,
         returned: true,
       },
       // patient fields
+      gender: {
+        type: "string",
+        input: true,
+        returned: true,
+      },
       bloodType: {
         type: "string",
         input: true,
-        required: true,
         returned: true,
       },
       birthDate: {
         type: "date",
         input: true,
-        required: true,
         returned: true,
       },
       height: {
         type: "number",
         input: true,
-        required: true,
         returned: true,
       },
       weight: {
         type: "number",
         input: true,
-        required: true,
         returned: true,
       },
     },
