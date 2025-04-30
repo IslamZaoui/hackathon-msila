@@ -12,3 +12,6 @@ export const BLOOD_TYPE = [
   "O-",
 ] as const;
 export type BloodType = (typeof BLOOD_TYPE)[number];
+
+export const USER_ROLE = ["doctor", "patient"] as const;
+export type UserRole = (typeof USER_ROLE)[number];

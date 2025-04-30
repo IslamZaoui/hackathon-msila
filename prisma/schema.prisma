@@ -87,17 +87,18 @@ enum AppointmentStatus {
 }
 
 model Appointment {
-  id           String        @id @default(nanoid())
+  id           String            @id @default(nanoid())
   patientId    String
-  patient      User          @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Cascade)
+  patient      User              @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Cascade)
   doctorId     String
-  doctor       User          @relation("DoctorAppointments", fields: [doctorId], references: [id], onDelete: Cascade)
+  doctor       User              @relation("DoctorAppointments", fields: [doctorId], references: [id], onDelete: Cascade)
   date         DateTime
+  status       AppointmentStatus @default(pending)
   price        Float?
   prescription Prescription?
   Analysis     Analysis?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
 
   @@map("appointment")
 }
