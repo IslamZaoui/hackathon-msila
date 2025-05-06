@@ -11,7 +11,7 @@ export default function SignInPage() {
             </h2>
             <RegistrationForm></RegistrationForm>
             <Button variant={"link"} asChild><Link href={"/signin"}>Already have an account? Sign In</Link></Button>
-            <Button variant={"link"} asChild><Link href={"/signup"}>Doctor? Sign Up as a Doctor</Link></Button>
+            <Button variant={"link"} asChild><Link href={"/signup/doctor"}>Doctor? Sign Up as a Doctor</Link></Button>
         </div>
     )
 }
