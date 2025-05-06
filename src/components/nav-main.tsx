@@ -38,7 +38,7 @@ export function NavMain({
                   pathname === item.url && "data-[slot=sidebar-menu-button]:bg-primary data-[slot=sidebar-menu-button]:text-primary-foreground data-[slot=sidebar-menu-button]:hover:bg-primary"
                 )}
               >
-                <Link href={item.url}>
+                <Link href={item.url} prefetch={true}>
                   {item.icon && <item.icon className="size-5" />}
                   <span>{item.title}</span>
                 </Link>
