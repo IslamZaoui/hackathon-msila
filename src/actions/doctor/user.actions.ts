@@ -17,7 +17,7 @@ export interface RegisterDoctorData extends z.infer<typeof doctorSignupSchema> {
 
 export async function registerDoctorAction(data: RegisterDoctorData) {
   const headerStore = await headers();
-
+  console.log(data);
   const { error } = await tryCatch(
     auth.api.signUpEmail({
       body: {
