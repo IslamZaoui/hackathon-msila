@@ -3,10 +3,9 @@
 import prisma from "@/lib/prisma";
 import { requireDoctor } from "../require/require-role";
 import { PatientUser } from "../auth.action";
-
 export async function getDoctorAppointments() {
   const doctor = await requireDoctor();
-
+  console.log("fetching");
   const appointments = await prisma.appointment.findMany({
     where: { doctorId: doctor.id },
     include: {
