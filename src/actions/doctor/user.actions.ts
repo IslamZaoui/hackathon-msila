@@ -28,7 +28,8 @@ export async function registerDoctorAction(data: RegisterDoctorData) {
         country: data.country,
         specialization: data.specialization,
         hcpId: data.hcpId,
-        medicalId: data.hcpId,
+        medicalId: data.medicalId,
+        phone: data.phone
       } as any,
       headers: headerStore,
     })

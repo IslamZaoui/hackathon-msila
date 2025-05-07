@@ -29,6 +29,7 @@ export async function registerPatientAction(input: RegisterPatientData) {
         birthDate: input.birthDate,
         height: input.height,
         weight: input.weight,
+        phone: input.phone,
       } as any,
       headers: headerStore,
     })
